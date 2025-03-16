@@ -98,11 +98,10 @@ model Class {
 }
 
 model Subject {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  lessons   Lesson[]
-  Teacher   Teacher? @relation(fields: [teacherId], references: [id])
-  teacherId String?
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  lessons  Lesson[]
+  teachers Teacher[]
 }
 
 model Lesson {
