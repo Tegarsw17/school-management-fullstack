@@ -2,6 +2,7 @@ import FormModal from '@/components/FormModal';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
 import TableSearch from '@/components/TableSearch';
+import { getUserRole, RoleType } from '@/lib/authUtils';
 import { role } from '@/lib/data';
 import { prisma } from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
@@ -10,7 +11,7 @@ import Image from 'next/image';
 
 type SubjectList = Subject & { teachers: Teacher[] };
 
-const columns = [
+const getColumns = (role: RoleType) => [
   {
     header: 'Subject Name',
     accessor: 'name',
@@ -55,6 +56,9 @@ const SubjectListPage = async ({
 }) => {
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
+
+  const { role } = await getUserRole();
+  const columns = getColumns(role);
 
   // url condition
   const query: Prisma.SubjectWhereInput = {};
