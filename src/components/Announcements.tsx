@@ -5,9 +5,9 @@ const Announcements = async () => {
   const { role, currentUserId } = await getUserRole();
 
   const roleConditions = {
-    Teacher: { lessons: { some: { teacherId: currentUserId! } } },
-    Student: { students: { some: { id: currentUserId! } } },
-    Parent: { students: { some: { parentId: currentUserId! } } },
+    teacher: { lessons: { some: { teacherId: currentUserId! } } },
+    student: { students: { some: { id: currentUserId! } } },
+    parent: { students: { some: { parentId: currentUserId! } } },
   };
 
   const data = await prisma.announcement.findMany({
@@ -17,7 +17,7 @@ const Announcements = async () => {
       ...(role !== 'admin' && {
         OR: [
           { classId: null },
-          { Class: roleConditions[role as keyof typeof roleConditions] || {} },
+          { class: roleConditions[role as keyof typeof roleConditions] || {} },
         ],
       }),
     },

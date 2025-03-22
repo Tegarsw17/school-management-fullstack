@@ -1,11 +1,35 @@
 'use client';
 
+import { deleteClass, deleteSubject, deleteTeacher } from '@/lib/action';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import { useState } from 'react';
-// import TeacherForm from './forms/TeacherForm';
-// import StudentForm from './forms/StudentForm';
+import { useRouter } from 'next/navigation';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useFormState } from 'react-dom';
+import { toast } from 'react-toastify';
+import { FormContainerProps } from './FormContainer';
 
+const deleteActionMap = {
+  subject: deleteSubject,
+  class: deleteClass,
+  teacher: deleteTeacher,
+  student: deleteSubject,
+  parent: deleteClass,
+  lesson: deleteTeacher,
+  exam: deleteSubject,
+  assignment: deleteClass,
+  result: deleteTeacher,
+  attendance: deleteSubject,
+  event: deleteClass,
+  teacannouncementher: deleteTeacher,
+};
+
+const SubjectForm = dynamic(() => import('./forms/SubjectForm'), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ClassForm = dynamic(() => import('./forms/ClassForm'), {
+  loading: () => <h1>Loading...</h1>,
+});
 const TeacherForm = dynamic(() => import('./forms/TeacherForm'), {
   loading: () => <h1>Loading...</h1>,
 });
@@ -14,10 +38,45 @@ const StudentForm = dynamic(() => import('./forms/StudentForm'), {
 });
 
 const forms: {
-  [key: string]: (type: 'create' | 'update', data?: any) => JSX.Element;
+  [key: string]: (
+    setOpen: Dispatch<SetStateAction<boolean>>,
+    type: 'create' | 'update',
+    data?: any,
+    relatedData?: any
+  ) => JSX.Element;
 } = {
-  teacher: (type, data) => <TeacherForm type={type} data={data} />,
-  student: (type, data) => <StudentForm type={type} data={data} />,
+  subject: (setOpen, type, data, relatedData) => (
+    <SubjectForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  class: (setOpen, type, data, relatedData) => (
+    <ClassForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  teacher: (setOpen, type, data, relatedData) => (
+    <TeacherForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  // student: (setOpen, type, data) => (
+  //   <StudentForm
+  //     type={type}
+  //     data={data}
+  //     setOpen={setOpen}
+  //     relatedData={relatedData}
+  //   />
+  // ),
 };
 
 const FormModal = ({
@@ -25,24 +84,8 @@ const FormModal = ({
   type,
   data,
   id,
-}: {
-  table:
-    | 'teacher'
-    | 'student'
-    | 'parent'
-    | 'subject'
-    | 'class'
-    | 'lesson'
-    | 'exam'
-    | 'assignment'
-    | 'result'
-    | 'attendance'
-    | 'event'
-    | 'announcement';
-  type: 'create' | 'update' | 'delete';
-  data?: any;
-  id?: number | string;
-}) => {
+  relatedData,
+}: FormContainerProps & { relatedData?: any }) => {
   const size = type === 'create' ? 'w-8 h-8' : 'w-7 h-7';
   const bgColor =
     type === 'create'
@@ -54,8 +97,26 @@ const FormModal = ({
   const [open, setOpen] = useState(false);
 
   const Form = () => {
+    const [state, formAction] = useFormState(
+      deleteActionMap[table as keyof typeof deleteActionMap],
+      {
+        success: false,
+        error: false,
+      }
+    );
+    const route = useRouter();
+
+    useEffect(() => {
+      if (state.success) {
+        toast(`Subject has been deleted!`);
+        route.refresh();
+        setOpen(false);
+      }
+    }, [state]);
+
     return type === 'delete' && id ? (
-      <form action="" className="p-4 flex flex-col gap-4">
+      <form action={formAction} className="p-4 flex flex-col gap-4">
+        <input type="text|number" name="id" value={id} hidden />
         <span className="text-center font-medium">
           All data will be lost. Are you sure you want this {table}?
         </span>
@@ -64,7 +125,7 @@ const FormModal = ({
         </button>
       </form>
     ) : type === 'create' || type === 'update' ? (
-      forms[table](type, data)
+      forms[table](setOpen, type, data, relatedData)
     ) : (
       'Form not Found'
     );
