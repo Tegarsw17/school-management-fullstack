@@ -55,6 +55,7 @@ async function main() {
     }
 
     // TEACHER
+    // user_2uR8kDhm7GuwcvZjKDKpveiWaqG --> 8
     for (let i = 1; i <= 15; i++) {
         await prisma.teacher.create({
             data: {
@@ -75,7 +76,33 @@ async function main() {
     }
 
     // LESSON
+    // for (let i = 1; i <= 30; i++) {
+    //     await prisma.lesson.create({
+    //         data: {
+    //             name: `Lesson${i}`,
+    //             day: Day[
+    //                 Object.keys(Day)[
+    //                 Math.floor(Math.random() * Object.keys(Day).length)
+    //                 ] as keyof typeof Day
+    //             ],
+    //             startTime: new Date(new Date().setHours(new Date().getHours() + 1)),
+    //             endTime: new Date(new Date().setHours(new Date().getHours() + 3)),
+    //             subjectId: (i % 10) + 1,
+    //             classId: (i % 6) + 1,
+    //             teacherId: `teacher${(i % 15) + 1}`,
+    //         },
+    //     });
+    // }
+
     for (let i = 1; i <= 30; i++) {
+        const startHour = Math.floor(Math.random() * 5) + 8;
+
+        const startTime = new Date();
+        startTime.setHours(startHour, 0, 0, 0);
+
+        const endTime = new Date(startTime);
+        endTime.setHours(startTime.getHours() + 2);
+
         await prisma.lesson.create({
             data: {
                 name: `Lesson${i}`,
@@ -84,8 +111,8 @@ async function main() {
                     Math.floor(Math.random() * Object.keys(Day).length)
                     ] as keyof typeof Day
                 ],
-                startTime: new Date(new Date().setHours(new Date().getHours() + 1)),
-                endTime: new Date(new Date().setHours(new Date().getHours() + 3)),
+                startTime: startTime,
+                endTime: endTime,
                 subjectId: (i % 10) + 1,
                 classId: (i % 6) + 1,
                 teacherId: `teacher${(i % 15) + 1}`,
@@ -94,6 +121,7 @@ async function main() {
     }
 
     // PARENT
+    // user_2uR8ngYwfe0nlBA8J6IqZY45m9s --> 3
     for (let i = 1; i <= 25; i++) {
         await prisma.parent.create({
             data: {
@@ -109,6 +137,7 @@ async function main() {
     }
 
     // STUDENT
+    // user_2uR8lvWAbXygWDTsN3X1N8XRSk6 --> 6
     for (let i = 1; i <= 50; i++) {
         await prisma.student.create({
             data: {
