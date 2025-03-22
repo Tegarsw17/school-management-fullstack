@@ -86,8 +86,8 @@ const ResultListPage = async ({
             break;
           case 'search':
             query.OR = [
-              { Exam: { title: { contains: value, mode: 'insensitive' } } },
-              { Student: { name: { contains: value, mode: 'insensitive' } } },
+              { exam: { title: { contains: value, mode: 'insensitive' } } },
+              { student: { name: { contains: value, mode: 'insensitive' } } },
             ];
             break;
           default:
@@ -103,8 +103,8 @@ const ResultListPage = async ({
       break;
     case 'teacher':
       query.OR = [
-        { Exam: { Lesson: { teacherId: currentUserId! } } },
-        { Assignment: { Lesson: { teacherId: currentUserId! } } },
+        { exam: { lesson: { teacherId: currentUserId! } } },
+        { assignment: { lesson: { teacherId: currentUserId! } } },
       ];
       break;
 
@@ -113,7 +113,7 @@ const ResultListPage = async ({
       break;
 
     case 'parent':
-      query.Student = {
+      query.student = {
         parentId: currentUserId!,
       };
       break;
@@ -125,23 +125,23 @@ const ResultListPage = async ({
     prisma.result.findMany({
       where: query,
       include: {
-        Student: { select: { name: true, surname: true } },
-        Exam: {
+        student: { select: { name: true, surname: true } },
+        exam: {
           include: {
-            Lesson: {
+            lesson: {
               select: {
-                Class: { select: { name: true } },
-                Teacher: { select: { name: true, surname: true } },
+                class: { select: { name: true } },
+                teacher: { select: { name: true, surname: true } },
               },
             },
           },
         },
-        Assignment: {
+        assignment: {
           include: {
-            Lesson: {
+            lesson: {
               select: {
-                Class: { select: { name: true } },
-                Teacher: { select: { name: true, surname: true } },
+                class: { select: { name: true } },
+                teacher: { select: { name: true, surname: true } },
               },
             },
           },
@@ -154,19 +154,19 @@ const ResultListPage = async ({
   ]);
 
   const data = dataRes.map((item) => {
-    const assestment = item.Exam || item.Assignment;
+    const assestment = item.exam || item.assignment;
     if (!assestment) return;
     const isExam = 'startTime' in assestment;
 
     return {
       id: item.id,
       title: assestment.title,
-      studentName: item.Student?.name,
-      studentSurname: item.Student?.surname,
-      teacherName: assestment.Lesson?.Teacher?.name,
-      teacherSurname: assestment.Lesson?.Teacher?.surname,
+      studentName: item.student?.name,
+      studentSurname: item.student?.surname,
+      teacherName: assestment.lesson?.teacher?.name,
+      teacherSurname: assestment.lesson?.teacher?.surname,
       score: item.score,
-      className: assestment.Lesson?.Class?.name,
+      className: assestment.lesson?.class?.name,
       startTime: isExam ? assestment.startTime : assestment.startDate,
     };
   });

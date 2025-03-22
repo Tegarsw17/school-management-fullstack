@@ -12,9 +12,9 @@ import Link from 'next/link';
 
 type ExamList = Exam & {
   Lesson: {
-    Subject: Subject;
-    Class: Class;
-    Teacher: Teacher;
+    subject: Subject;
+    class: Class;
+    teacher: Teacher;
   };
 };
 
@@ -62,20 +62,20 @@ const ExamListPage = async ({
   // url condition
   const query: Prisma.ExamWhereInput = {};
 
-  query.Lesson = {};
+  query.lesson = {};
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
           case 'classId':
-            query.Lesson.classId = parseInt(value);
+            query.lesson.classId = parseInt(value);
             break;
           case 'teacherId':
-            query.Lesson.teacherId = value;
+            query.lesson.teacherId = value;
             break;
           case 'search':
-            query.Lesson.Subject = {
+            query.lesson.subject = {
               name: { contains: value, mode: 'insensitive' },
             };
             break;
@@ -90,10 +90,10 @@ const ExamListPage = async ({
     case 'admin':
       break;
     case 'teacher':
-      query.Lesson.teacherId = currentUserId!;
+      query.lesson.teacherId = currentUserId!;
       break;
     case 'student':
-      query.Lesson.Class = {
+      query.lesson.class = {
         students: {
           some: {
             id: currentUserId!,
@@ -102,7 +102,7 @@ const ExamListPage = async ({
       };
       break;
     case 'parent':
-      query.Lesson.Class = {
+      query.lesson.class = {
         students: {
           some: {
             parentId: currentUserId!,
@@ -118,11 +118,11 @@ const ExamListPage = async ({
     prisma.exam.findMany({
       where: query,
       include: {
-        Lesson: {
+        lesson: {
           select: {
-            Subject: { select: { name: true } },
-            Teacher: { select: { name: true, surname: true } },
-            Class: { select: { name: true } },
+            subject: { select: { name: true } },
+            teacher: { select: { name: true, surname: true } },
+            class: { select: { name: true } },
           },
         },
       },
@@ -138,11 +138,11 @@ const ExamListPage = async ({
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-starPurpleLight"
     >
       <td className="flex items-center gap-4 p-4">
-        {item.Lesson.Subject.name}
+        {item.Lesson.subject.name}
       </td>
-      <td className="hidden md:table-cell">{item.Lesson.Class.name}</td>
+      <td className="hidden md:table-cell">{item.Lesson.class.name}</td>
       <td className="hidden md:table-cell">
-        {item.Lesson.Teacher.name + ' ' + item.Lesson.Teacher.surname}
+        {item.Lesson.teacher.name + ' ' + item.Lesson.teacher.surname}
       </td>
       <td className="hidden md:table-cell">
         {new Intl.DateTimeFormat('en-US').format(new Date(item.startTime))}

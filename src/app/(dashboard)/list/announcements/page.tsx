@@ -8,7 +8,7 @@ import { ITEM_PER_PAGE } from '@/lib/settings';
 import { Announcement, Class, Prisma } from '@prisma/client';
 import Image from 'next/image';
 
-type AnnouncementList = Announcement & { Class: Class };
+type AnnouncementList = Announcement & { class: Class };
 
 const getColumns = (role: RoleType) => [
   {
@@ -74,7 +74,7 @@ const AnnouncementListPage = async ({
   query.OR = [
     { classId: null },
     {
-      Class: roleConditions[role as keyof typeof roleConditions] || {},
+      class: roleConditions[role as keyof typeof roleConditions] || {},
     },
   ];
 
@@ -82,7 +82,7 @@ const AnnouncementListPage = async ({
     prisma.announcement.findMany({
       where: query,
       include: {
-        Class: true,
+        class: true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
@@ -96,7 +96,7 @@ const AnnouncementListPage = async ({
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-starPurpleLight"
     >
       <td className="flex items-center gap-4 p-4">{item.title}</td>
-      <td>{item.Class?.name || 'All'}</td>
+      <td>{item.class?.name || 'All'}</td>
       <td className="hidden md:table-cell">
         {new Intl.DateTimeFormat('id-ID').format(new Date(item.date))}
       </td>

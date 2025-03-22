@@ -10,7 +10,7 @@ import { Class, Prisma, Student } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
 
-type StudentList = Student & { Class: Class };
+type StudentList = Student & { class: Class };
 
 const getColumns = (role: RoleType) => [
   {
@@ -67,7 +67,7 @@ const StudentListPage = async ({
       if (value !== undefined) {
         switch (key) {
           case 'teacherId':
-            query.Class = {
+            query.class = {
               lessons: {
                 some: {
                   teacherId: value,
@@ -89,7 +89,7 @@ const StudentListPage = async ({
     prisma.student.findMany({
       where: query,
       include: {
-        Class: true,
+        class: true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
@@ -112,11 +112,11 @@ const StudentListPage = async ({
         />
         <div className="flex flex-col">
           <h3 className="font-semibold">{item.name}</h3>
-          <p className="text-xs text-gray-500">{item.Class.name}</p>
+          <p className="text-xs text-gray-500">{item.class.name}</p>
         </div>
       </td>
       <td className="hidden md:table-cell">{item.username}</td>
-      <td className="hidden md:table-cell">{item.Class.name[0]}</td>
+      <td className="hidden md:table-cell">{item.class.name[0]}</td>
       <td className="hidden md:table-cell">{item.phone}</td>
       <td className="hidden md:table-cell">{item.address}</td>
       <td>

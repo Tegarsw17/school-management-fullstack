@@ -10,7 +10,7 @@ import { Class, Lesson, Prisma, Subject, Teacher } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
 
-type LessonList = Lesson & { Subject: Subject; Class: Class; Teacher: Teacher };
+type LessonList = Lesson & { subject: Subject; class: Class; teacher: Teacher };
 
 const getColumns = (role: RoleType) => [
   {
@@ -64,8 +64,8 @@ const LessonListPage = async ({
             break;
           case 'search':
             query.OR = [
-              { Subject: { name: { contains: value, mode: 'insensitive' } } },
-              { Teacher: { name: { contains: value, mode: 'insensitive' } } },
+              { subject: { name: { contains: value, mode: 'insensitive' } } },
+              { teacher: { name: { contains: value, mode: 'insensitive' } } },
             ];
             break;
           default:
@@ -79,9 +79,9 @@ const LessonListPage = async ({
     prisma.lesson.findMany({
       where: query,
       include: {
-        Subject: { select: { name: true } },
-        Class: { select: { name: true } },
-        Teacher: { select: { name: true, surname: true } },
+        subject: { select: { name: true } },
+        class: { select: { name: true } },
+        teacher: { select: { name: true, surname: true } },
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
@@ -94,10 +94,10 @@ const LessonListPage = async ({
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-starPurpleLight"
     >
-      <td className="flex items-center gap-4 p-4">{item.Subject.name}</td>
-      <td className="hidden md:table-cell">{item.Class.name}</td>
+      <td className="flex items-center gap-4 p-4">{item.subject.name}</td>
+      <td className="hidden md:table-cell">{item.class.name}</td>
       <td className="hidden md:table-cell">
-        {item.Teacher.name + ' ' + item.Teacher.surname}
+        {item.teacher.name + ' ' + item.teacher.surname}
       </td>
       <td>
         <div className="flex items-center gap-2">

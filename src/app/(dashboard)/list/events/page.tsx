@@ -10,7 +10,7 @@ import { Class, Event, Prisma } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
 
-type EventList = Event & { Class: Class };
+type EventList = Event & { class: Class };
 
 const getColumns = (role: RoleType) => [
   {
@@ -86,7 +86,7 @@ const EventListPage = async ({
   query.OR = [
     { classId: null },
     {
-      Class: roleConditions[role as keyof typeof roleConditions] || {},
+      class: roleConditions[role as keyof typeof roleConditions] || {},
     },
   ];
 
@@ -94,7 +94,7 @@ const EventListPage = async ({
     prisma.event.findMany({
       where: query,
       include: {
-        Class: true,
+        class: true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
@@ -108,7 +108,7 @@ const EventListPage = async ({
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-starPurpleLight"
     >
       <td className="flex items-center gap-4 p-4">{item.title}</td>
-      <td>{item.Class?.name || 'All'}</td>
+      <td>{item.class?.name || 'All'}</td>
       <td className="hidden md:table-cell">
         {new Intl.DateTimeFormat('id-ID').format(new Date(item.startTime))}
       </td>

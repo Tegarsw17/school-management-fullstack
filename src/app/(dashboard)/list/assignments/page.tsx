@@ -11,10 +11,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 type AssignmentList = Assignment & {
-  Lesson: {
-    Subject: Subject;
-    Class: Class;
-    Teacher: Teacher;
+  lesson: {
+    subject: Subject;
+    class: Class;
+    teacher: Teacher;
   };
 };
 
@@ -62,20 +62,20 @@ const AssignmentListPage = async ({
   // url condition
   const query: Prisma.AssignmentWhereInput = {};
 
-  query.Lesson = {};
+  query.lesson = {};
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
           case 'classId':
-            query.Lesson.classId = parseInt(value);
+            query.lesson.classId = parseInt(value);
             break;
           case 'teacherId':
-            query.Lesson.teacherId = value;
+            query.lesson.teacherId = value;
             break;
           case 'search':
-            query.Lesson.Subject = {
+            query.lesson.subject = {
               name: { contains: value, mode: 'insensitive' },
             };
             break;
@@ -91,10 +91,10 @@ const AssignmentListPage = async ({
     case 'admin':
       break;
     case 'teacher':
-      query.Lesson.teacherId = currentUserId!;
+      query.lesson.teacherId = currentUserId!;
       break;
     case 'student':
-      query.Lesson.Class = {
+      query.lesson.class = {
         students: {
           some: {
             id: currentUserId!,
@@ -103,7 +103,7 @@ const AssignmentListPage = async ({
       };
       break;
     case 'parent':
-      query.Lesson.Class = {
+      query.lesson.class = {
         students: {
           some: {
             parentId: currentUserId!,
@@ -119,11 +119,11 @@ const AssignmentListPage = async ({
     prisma.assignment.findMany({
       where: query,
       include: {
-        Lesson: {
+        lesson: {
           select: {
-            Subject: { select: { name: true } },
-            Teacher: { select: { name: true, surname: true } },
-            Class: { select: { name: true } },
+            subject: { select: { name: true } },
+            teacher: { select: { name: true, surname: true } },
+            class: { select: { name: true } },
           },
         },
       },
@@ -139,11 +139,11 @@ const AssignmentListPage = async ({
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-starPurpleLight"
     >
       <td className="flex items-center gap-4 p-4">
-        {item.Lesson.Subject.name}
+        {item.lesson.subject.name}
       </td>
-      <td className="hidden md:table-cell">{item.Lesson.Class.name}</td>
+      <td className="hidden md:table-cell">{item.lesson.class.name}</td>
       <td className="hidden md:table-cell">
-        {item.Lesson.Teacher.name + ' ' + item.Lesson.Teacher.surname}
+        {item.lesson.teacher.name + ' ' + item.lesson.teacher.surname}
       </td>
       <td className="hidden md:table-cell">
         {new Intl.DateTimeFormat('en-US').format(new Date(item.dueDate))}
