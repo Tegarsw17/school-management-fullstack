@@ -62,7 +62,7 @@ const ClassForm = ({
       setOpen(false);
       route.refresh();
     }
-  }, [state]);
+  }, [state, route, setOpen, type]);
 
   const { teachers, grades } = relatedData;
 

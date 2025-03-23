@@ -17,7 +17,7 @@ const LoginPage = () => {
     if (role) {
       router.push(`/${role}`);
     }
-  }, [user]);
+  }, [user, router]);
 
   return (
     <div className="h-screen flex items-center justify-center bg-starSkyLight">
